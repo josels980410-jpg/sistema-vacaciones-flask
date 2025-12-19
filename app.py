@@ -154,7 +154,6 @@ def rechazar(id_solicitud):
 
     return redirect("/responsable")
 
-
 @app.route("/admin")
 def admin():
     if "rol" not in session or session["rol"] != "admin":
