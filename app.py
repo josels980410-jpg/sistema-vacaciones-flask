@@ -84,6 +84,7 @@ def trabajador():
     user_id = session["user_id"]
 
     df_users = pd.read_excel(USUARIOS_FILE)
+    df_users = df_users.fillna("")
     user = df_users[df_users["id"] == user_id].iloc[0]
 
     fecha_ingreso = pd.to_datetime(user["fecha_ingreso"]).date()
@@ -218,20 +219,39 @@ def admin():
     if "rol" not in session or session["rol"] != "admin":
         return redirect("/")
 
+    # Leer archivos
     df_users = pd.read_excel(USUARIOS_FILE)
     df_vac = pd.read_excel(VACACIONES_FILE)
 
+    # Normalizar rol (IMPORTANTE para las tarjetas)
+    df_users["rol"] = df_users["rol"].astype(str).str.strip().str.lower()
+
+    # =========================
+    # TARJETAS RESUMEN
+    # =========================
+    total_usuarios = len(df_users)
+    total_trabajadores = len(df_users[df_users["rol"] == "trabajador"])
+    total_responsables = len(df_users[df_users["rol"] == "responsable"])
+    total_admins = len(df_users[df_users["rol"] == "admin"])
+
+    # =========================
+    # TABLA DE USUARIOS
+    # =========================
     usuarios = []
 
     for _, u in df_users.iterrows():
         fecha_ingreso = pd.to_datetime(u["fecha_ingreso"]).date()
+
+        # Calcula años laborados y días según política
         dias_totales, anios = calcular_dias_vacaciones(fecha_ingreso)
 
+        # Vacaciones aprobadas
         usados = df_vac[
             (df_vac["id_usuario"] == u["id"]) &
             (df_vac["estado"] == "Aprobado")
         ]["dias"].sum()
 
+        # Vacaciones pendientes
         pendientes = df_vac[
             (df_vac["id_usuario"] == u["id"]) &
             (df_vac["estado"] == "Pendiente")
@@ -248,11 +268,20 @@ def admin():
             "dias_totales": dias_totales,
             "dias_usados": usados,
             "dias_pendientes": pendientes,
-            "dias_disponibles": dias_totales - usados
+            "dias_disponibles": dias_totales - usados,
+            "correo_notificaciones": u["correo_notificaciones"],
+            "activo": u["activo"],
+            "id_responsable": u["id_responsable"],
         })
 
-    return render_template("admin.html", usuarios=usuarios)
-
+    return render_template(
+        "admin.html",
+        usuarios=usuarios,
+        total_usuarios=total_usuarios,
+        total_trabajadores=total_trabajadores,
+        total_responsables=total_responsables,
+        total_admins=total_admins
+    )
 
 # =========================
 # LOGOUT

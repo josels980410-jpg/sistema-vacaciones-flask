@@ -64,6 +64,8 @@
                         <th>Usados</th>
                         <th>Pendientes</th>
                         <th>Correo notificación</th>
+                        <th>Responsables</th>
+                        <th>Activo</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -79,6 +81,8 @@
                         <td>{{ u.dias_usados }}</td>
                         <td>{{ u.dias_pendientes }}</td>
                         <td>{{ u.correo_notificaciones }}</td>
+                        <td>{{ u.id_responsable }}</td>
+                        <td>{{ u.activo }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
