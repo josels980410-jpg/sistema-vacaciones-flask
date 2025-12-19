@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Trabajador</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-success px-4">
+    <span class="navbar-brand">Mis Vacaciones</span>
+    <a href="/logout" class="btn btn-danger">Cerrar sesión</a>
+</nav>
+
+<div class="container mt-4">
+
+    <h4>Resumen de Vacaciones</h4>
+
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6>Días asignados</h6>
+                    <h2>{{ dias_totales }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6>Días usados</h6>
+                    <h2>{{ dias_usados }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6>Días disponibles</h6>
+                    <h2>{{ dias_disponibles }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-4">
+
+    <h4>Solicitar Vacaciones</h4>
+
+    <form method="POST">
+        <div class="row">
+            <div class="col-md-4">
+                <label>Fecha inicio</label>
+                <input type="date" name="fecha_inicio" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label>Fecha fin</label>
+                <input type="date" name="fecha_fin" class="form-control" required>
+            </div>
+        </div>
+
+        <button class="btn btn-success mt-3">Enviar solicitud</button>
+    </form>
+
+</div>
+
+</body>
+</html>
