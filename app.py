@@ -1,12 +1,34 @@
 from flask import Flask, render_template, request, redirect, session, url_for, flash
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, date
 
 app = Flask(__name__)
 app.secret_key = "clave_secreta"
 
 USUARIOS_FILE = "data/usuarios.xlsx"
 VACACIONES_FILE = "data/vacaciones.xlsx"
+POLITICA_FILE = "data/politica_vacaciones.xlsx"
+
+# =========================
+# FUNCIÓN CÁLCULO VACACIONES
+# =========================
+def calcular_dias_vacaciones(fecha_ingreso):
+    hoy = date.today()
+    anios_laborados = (hoy - fecha_ingreso).days // 365
+
+    politica = pd.read_excel(POLITICA_FILE)
+
+    fila = politica[
+        (politica["anios_min"] <= anios_laborados) &
+        (politica["anios_max"] > anios_laborados)
+    ]
+
+    if fila.empty:
+        return 0, anios_laborados
+
+    dias = int(fila.iloc[0]["dias_vacaciones"])
+    return dias, anios_laborados
+
 
 # =========================
 # LOGIN
@@ -64,21 +86,22 @@ def trabajador():
     df_users = pd.read_excel(USUARIOS_FILE)
     user = df_users[df_users["id"] == user_id].iloc[0]
 
-    dias_totales = int(user["dias_vacaciones"])
+    fecha_ingreso = pd.to_datetime(user["fecha_ingreso"]).date()
+    dias_totales, _ = calcular_dias_vacaciones(fecha_ingreso)
 
     df_vac = pd.read_excel(VACACIONES_FILE)
 
-    df_user_vac = df_vac[
+    df_aprobadas = df_vac[
         (df_vac["id_usuario"] == user_id) &
         (df_vac["estado"] == "Aprobado")
     ]
 
-    dias_usados = df_user_vac["dias"].sum() if not df_user_vac.empty else 0
+    dias_usados = df_aprobadas["dias"].sum() if not df_aprobadas.empty else 0
     dias_disponibles = dias_totales - dias_usados
 
     if request.method == "POST":
-        inicio = datetime.strptime(request.form["fecha_inicio"], "%Y-%m-%d")
-        fin = datetime.strptime(request.form["fecha_fin"], "%Y-%m-%d")
+        inicio = datetime.strptime(request.form["fecha_inicio"], "%Y-%m-%d").date()
+        fin = datetime.strptime(request.form["fecha_fin"], "%Y-%m-%d").date()
 
         dias_solicitados = (fin - inicio).days + 1
 
@@ -90,8 +113,8 @@ def trabajador():
             nuevo = {
                 "id": len(df_vac) + 1,
                 "id_usuario": user_id,
-                "fecha_inicio": inicio.date(),
-                "fecha_fin": fin.date(),
+                "fecha_inicio": inicio,
+                "fecha_fin": fin,
                 "dias": dias_solicitados,
                 "estado": "Pendiente",
                 "aprobado_por": ""
@@ -195,23 +218,41 @@ def admin():
     if "rol" not in session or session["rol"] != "admin":
         return redirect("/")
 
-    df = pd.read_excel(USUARIOS_FILE)
+    df_users = pd.read_excel(USUARIOS_FILE)
+    df_vac = pd.read_excel(VACACIONES_FILE)
 
-    usuarios = df.to_dict(orient="records")
+    usuarios = []
 
-    total_usuarios = len(df)
-    total_trabajadores = len(df[df["rol"] == "trabajador"])
-    total_responsables = len(df[df["rol"] == "responsable"])
-    total_admins = len(df[df["rol"] == "admin"])
+    for _, u in df_users.iterrows():
+        fecha_ingreso = pd.to_datetime(u["fecha_ingreso"]).date()
+        dias_totales, anios = calcular_dias_vacaciones(fecha_ingreso)
 
-    return render_template(
-        "admin.html",
-        usuarios=usuarios,
-        total_usuarios=total_usuarios,
-        total_trabajadores=total_trabajadores,
-        total_responsables=total_responsables,
-        total_admins=total_admins
-    )
+        usados = df_vac[
+            (df_vac["id_usuario"] == u["id"]) &
+            (df_vac["estado"] == "Aprobado")
+        ]["dias"].sum()
+
+        pendientes = df_vac[
+            (df_vac["id_usuario"] == u["id"]) &
+            (df_vac["estado"] == "Pendiente")
+        ]["dias"].sum()
+
+        usuarios.append({
+            "id": u["id"],
+            "nombre": u["nombre"],
+            "correo": u["correo"],
+            "rol": u["rol"],
+            "area": u["area"],
+            "fecha_ingreso": fecha_ingreso,
+            "anios_laborados": anios,
+            "dias_totales": dias_totales,
+            "dias_usados": usados,
+            "dias_pendientes": pendientes,
+            "dias_disponibles": dias_totales - usados
+        })
+
+    return render_template("admin.html", usuarios=usuarios)
+
 
 # =========================
 # LOGOUT
