@@ -13,7 +13,9 @@
     </div>
 
     <div class="navbar-right">
+        {% if rol %}
         <span class="rol">{{ rol }}</span>
+        {% endif %}
         <a href="{{ url_for('logout') }}" class="logout">Cerrar sesión</a>
     </div>
 </nav>
