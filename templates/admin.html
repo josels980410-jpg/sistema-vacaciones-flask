@@ -50,30 +50,41 @@
     <div class="card-body">
         <h5 class="mb-3">Usuarios registrados</h5>
 
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Correo</th>
-                    <th>Rol</th>
-                    <th>Área</th>
-                    <th>Días Vacaciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for u in usuarios %}
-                <tr>
-                    <td>{{ u.id }}</td>
-                    <td>{{ u.nombre }}</td>
-                    <td>{{ u.correo }}</td>
-                    <td>{{ u.rol }}</td>
-                    <td>{{ u.area }}</td>
-                    <td>{{ u.dias_vacaciones }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Rol</th>
+                        <th>Área</th>
+                        <th>Fecha ingreso</th>
+                        <th>Años</th>
+                        <th>Días totales</th>
+                        <th>Usados</th>
+                        <th>Pendientes</th>
+                        <th>Correo notificación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in usuarios %}
+                    <tr>
+                        <td>{{ u.id }}</td>
+                        <td>{{ u.nombre }}</td>
+                        <td>{{ u.rol }}</td>
+                        <td>{{ u.area }}</td>
+                        <td>{{ u.fecha_ingreso }}</td>
+                        <td>{{ u.anios_laborados }}</td>
+                        <td>{{ u.dias_totales }}</td>
+                        <td>{{ u.dias_usados }}</td>
+                        <td>{{ u.dias_pendientes }}</td>
+                        <td>{{ u.correo_notificaciones }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
     </div>
 </div>
 
