@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Sistema de Vacaciones{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
 </head>
 <body>
@@ -14,13 +16,13 @@
 
     <div class="navbar-right">
         {% if rol %}
-        <span class="rol">{{ rol }}</span>
+            <span class="rol">{{ rol }}</span>
         {% endif %}
         <a href="{{ url_for('logout') }}" class="logout">Cerrar sesión</a>
     </div>
 </nav>
 
-<div class="content">
+<!-- MENSAJES FLASH -->
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         <div class="container mt-3">
@@ -34,7 +36,11 @@
     {% endif %}
 {% endwith %}
 
+<!-- CONTENIDO DE CADA VISTA -->
+<div class="content container mt-4">
+    {% block content %}{% endblock %}
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

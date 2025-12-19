@@ -193,14 +193,25 @@ def rechazar(id_solicitud):
 @app.route("/admin")
 def admin():
     if "rol" not in session or session["rol"] != "admin":
-        flash("Acceso no autorizado", "danger")
         return redirect("/")
 
     df = pd.read_excel(USUARIOS_FILE)
+
     usuarios = df.to_dict(orient="records")
 
-    return render_template("admin.html", usuarios=usuarios)
+    total_usuarios = len(df)
+    total_trabajadores = len(df[df["rol"] == "trabajador"])
+    total_responsables = len(df[df["rol"] == "responsable"])
+    total_admins = len(df[df["rol"] == "admin"])
 
+    return render_template(
+        "admin.html",
+        usuarios=usuarios,
+        total_usuarios=total_usuarios,
+        total_trabajadores=total_trabajadores,
+        total_responsables=total_responsables,
+        total_admins=total_admins
+    )
 
 # =========================
 # LOGOUT
