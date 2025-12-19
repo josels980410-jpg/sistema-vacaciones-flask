@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Usuario{% endblock %}
+
+{% block content %}
+
+<h3 class="mb-4">
+    {% if usuario %}Editar Usuario{% else %}Nuevo Usuario{% endif %}
+</h3>
+
+<form method="POST">
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label>Nombre</label>
+            <input type="text" name="nombre" class="form-control"
+                   value="{{ usuario.nombre if usuario }}">
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label>Correo (login)</label>
+            <input type="email" name="correo" class="form-control"
+                   value="{{ usuario.correo if usuario }}">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label>Rol</label>
+            <select name="rol" class="form-select">
+                <option value="admin" {% if usuario and usuario.rol == 'admin' %}selected{% endif %}>Admin</option>
+                <option value="responsable" {% if usuario and usuario.rol == 'responsable' %}selected{% endif %}>Responsable</option>
+                <option value="trabajador" {% if usuario and usuario.rol == 'trabajador' %}selected{% endif %}>Trabajador</option>
+            </select>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label>Área</label>
+            <input type="text" name="area" class="form-control"
+                   value="{{ usuario.area if usuario }}">
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label>Fecha ingreso</label>
+            <input type="date" name="fecha_ingreso" class="form-control"
+                   value="{{ usuario.fecha_ingreso if usuario }}">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label>Correo notificaciones</label>
+            <input type="email" name="correo_notificaciones" class="form-control"
+                   value="{{ usuario.correo_notificaciones if usuario }}">
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <label>ID Responsable</label>
+            <input type="number" name="id_responsable" class="form-control"
+                   value="{{ usuario.id_responsable if usuario }}">
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <label>Activo</label>
+            <select name="activo" class="form-select">
+                <option value="1" {% if usuario and usuario.activo == 1 %}selected{% endif %}>Sí</option>
+                <option value="0" {% if usuario and usuario.activo == 0 %}selected{% endif %}>No</option>
+            </select>
+        </div>
+    </div>
+
+    <button class="btn btn-success">Guardar</button>
+    <a href="{{ url_for('admin') }}" class="btn btn-secondary">Cancelar</a>
+
+</form>
+
+{% endblock %}

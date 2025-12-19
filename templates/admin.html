@@ -48,7 +48,15 @@
 <!-- TABLA DE USUARIOS -->
 <div class="card shadow-sm">
     <div class="card-body">
-        <h5 class="mb-3">Usuarios registrados</h5>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Usuarios registrados</h5>
+
+            <!-- BOTÓN AGREGAR -->
+            <a href="{{ url_for('nuevo_usuario') }}" class="btn btn-primary">
+                ➕ Agregar usuario
+            </a>
+        </div>
 
         <div class="table-responsive">
             <table class="table table-bordered table-striped align-middle">
@@ -64,10 +72,12 @@
                         <th>Usados</th>
                         <th>Pendientes</th>
                         <th>Correo notificación</th>
-                        <th>Responsables</th>
+                        <th>ID Responsable</th>
                         <th>Activo</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     {% for u in usuarios %}
                     <tr>
@@ -82,10 +92,31 @@
                         <td>{{ u.dias_pendientes }}</td>
                         <td>{{ u.correo_notificaciones }}</td>
                         <td>{{ u.id_responsable }}</td>
-                        <td>{{ u.activo }}</td>
+                        <td>
+                            {% if u.activo == 1 or u.activo == "1" %}
+                                <span class="badge bg-success">Activo</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Inactivo</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- ACCIONES -->
+                        <td>
+                            <a href="{{ url_for('editar_usuario', user_id=u.id) }}"
+                               class="btn btn-warning btn-sm mb-1">
+                                Editar
+                            </a>
+
+                            <a href="{{ url_for('eliminar_usuario', user_id=u.id) }}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('¿Seguro que deseas eliminar este usuario?')">
+                                Eliminar
+                            </a>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
+
             </table>
         </div>
 
